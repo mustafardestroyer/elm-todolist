@@ -5,7 +5,7 @@ import Bootstrap.Card as Card
 import Bootstrap.Card.Block as Block
 import Bootstrap.Grid as Grid
 import Bootstrap.Grid.Col as Col
-import Bootstrap.ListGroup as Listgroup
+import Bootstrap.ListGroup as ListGroup
 import Bootstrap.Modal as Modal
 import Bootstrap.Navbar as Navbar
 import Browser exposing (UrlRequest)
@@ -21,11 +21,17 @@ type alias Flags =
     {}
 
 
+type alias Todo =
+    { name : String
+    , date : String
+    }
+
+
 type alias Model =
     { navKey : Navigation.Key
     , page : Page
     , navState : Navbar.State
-    , modalVisibility : Modal.Visibility
+    , todos : List Todo
     }
 
 
@@ -53,7 +59,7 @@ init flags url key =
             Navbar.initialState NavMsg
 
         ( model, urlCmd ) =
-            urlUpdate url { navKey = key, navState = navState, page = Home, modalVisibility = Modal.hidden }
+            urlUpdate url { navKey = key, navState = navState, page = Home, todos = [] }
     in
     ( model, Cmd.batch [ urlCmd, navCmd ] )
 
@@ -62,8 +68,6 @@ type Msg
     = UrlChange Url
     | ClickedLink UrlRequest
     | NavMsg Navbar.State
-    | CloseModal
-    | ShowModal
 
 
 subscriptions : Model -> Sub Msg
@@ -87,16 +91,6 @@ update msg model =
 
         NavMsg state ->
             ( { model | navState = state }
-            , Cmd.none
-            )
-
-        CloseModal ->
-            ( { model | modalVisibility = Modal.hidden }
-            , Cmd.none
-            )
-
-        ShowModal ->
-            ( { model | modalVisibility = Modal.shown }
             , Cmd.none
             )
 
@@ -131,7 +125,6 @@ view model =
         [ div []
             [ menu model
             , mainContent model
-            , modal model
             ]
         ]
     }
@@ -142,7 +135,7 @@ menu model =
     Navbar.config NavMsg
         |> Navbar.withAnimation
         |> Navbar.container
-        |> Navbar.brand [ href "#" ] [ text "To-Do list" ]
+        |> Navbar.brand [ href "#" ] [ text "Jake's To-Do list" ]
         |> Navbar.view model.navState
 
 
@@ -159,31 +152,13 @@ mainContent model =
 
 pageHome : Model -> List (Html Msg)
 pageHome model =
-    [ h1 [] [ text "Home" ] ]
+    [ ListGroup.ul
+        []
+    ]
 
 
 pageNotFound : List (Html Msg)
 pageNotFound =
     [ h1 [] [ text "Not found" ]
-    , text "SOrry couldn't find that page"
+    , text "Sorry couldn't find that page"
     ]
-
-
-modal : Model -> Html Msg
-modal model =
-    Modal.config CloseModal
-        |> Modal.small
-        |> Modal.h4 [] [ text "Getting started ?" ]
-        |> Modal.body []
-            [ Grid.containerFluid []
-                [ Grid.row []
-                    [ Grid.col
-                        [ Col.xs6 ]
-                        [ text "Col 1" ]
-                    , Grid.col
-                        [ Col.xs6 ]
-                        [ text "Col 2" ]
-                    ]
-                ]
-            ]
-        |> Modal.view model.modalVisibility
