@@ -1,18 +1,13 @@
 module Main exposing (main)
 
-import Bootstrap.Button as Button
-import Bootstrap.Card as Card
-import Bootstrap.Card.Block as Block
 import Bootstrap.Grid as Grid
-import Bootstrap.Grid.Col as Col
 import Bootstrap.ListGroup as ListGroup
-import Bootstrap.Modal as Modal
 import Bootstrap.Navbar as Navbar
 import Browser exposing (UrlRequest)
 import Browser.Navigation as Navigation
 import Html exposing (..)
 import Html.Attributes exposing (..)
-import Html.Events exposing (onClick)
+import Time
 import Url exposing (Url)
 import Url.Parser as UrlParser exposing ((</>), Parser, s, top)
 
@@ -23,7 +18,7 @@ type alias Flags =
 
 type alias Todo =
     { name : String
-    , date : String
+    , date : Time.Posix
     }
 
 
@@ -59,7 +54,16 @@ init flags url key =
             Navbar.initialState NavMsg
 
         ( model, urlCmd ) =
-            urlUpdate url { navKey = key, navState = navState, page = Home, todos = [] }
+            urlUpdate url
+                { navKey = key
+                , navState = navState
+                , page = Home
+                , todos =
+                    [ { name = "Finish Elm Todo List"
+                      , date = Time.millisToPosix 0
+                      }
+                    ]
+                }
     in
     ( model, Cmd.batch [ urlCmd, navCmd ] )
 
@@ -153,7 +157,10 @@ mainContent model =
 pageHome : Model -> List (Html Msg)
 pageHome model =
     [ ListGroup.ul
-        []
+        (List.map
+            (\todo -> ListGroup.li [] [ text todo.name ])
+            model.todos
+        )
     ]
 
 
