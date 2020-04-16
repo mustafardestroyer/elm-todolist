@@ -65,12 +65,7 @@ init flags url key =
                 { navKey = key
                 , navState = navState
                 , page = Home
-                , todos =
-                    [ { name = "Finish Elm Todo List"
-                      , date = Time.millisToPosix 0
-                      , isDone = False
-                      }
-                    ]
+                , todos = []
                 , todoText = ""
                 }
     in
@@ -110,7 +105,7 @@ update msg model =
             )
 
         AddTodo ->
-            ( model, Cmd.none )
+            ( { model | todos = List.append model.todos [ { name = model.todoText, date = Time.millisToPosix 0, isDone = False } ] }, Cmd.none )
 
         UpdateText text ->
             ( { model | todoText = text }, Cmd.none )
