@@ -11,7 +11,7 @@ import Browser exposing (UrlRequest)
 import Browser.Navigation as Navigation
 import Html exposing (..)
 import Html.Attributes exposing (..)
-import Html.Events exposing (onClick, onInput)
+import Html.Events exposing (onClick, onInput, onSubmit)
 import Time
 import Url exposing (Url)
 import Url.Parser as UrlParser exposing ((</>), Parser, s, top)
@@ -80,6 +80,7 @@ type Msg
     | AddTodo
     | UpdateText String
     | ToggleTodoDone Int
+    | NoOp
 
 
 subscriptions : Model -> Sub Msg
@@ -114,6 +115,9 @@ update msg model =
 
         ToggleTodoDone todoID ->
             ( { model | todos = List.map (toggle todoID) model.todos }, Cmd.none )
+
+        NoOp ->
+            ( model, Cmd.none )
 
 
 toggle : Int -> Todo -> Todo
@@ -191,7 +195,7 @@ pageHome model =
             )
             model.todos
         )
-    , Form.formInline []
+    , Form.formInline [ onSubmit NoOp ]
         [ Input.text [ Input.attrs [ onInput UpdateText, placeholder "New To-do...", value model.todoText ] ]
         , Button.button [ Button.primary, Button.attrs [ onClick AddTodo ] ] [ text "Add To-do" ]
         ]
