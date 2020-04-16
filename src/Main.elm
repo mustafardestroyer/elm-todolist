@@ -1,10 +1,10 @@
 module Main exposing (main)
 
 import Bootstrap.Button as Button
+import Bootstrap.Form as Form
 import Bootstrap.Form.Checkbox as Checkbox
 import Bootstrap.Form.Input as Input
 import Bootstrap.Grid as Grid
-import Bootstrap.Grid.Col as Col
 import Bootstrap.ListGroup as ListGroup
 import Bootstrap.Navbar as Navbar
 import Browser exposing (UrlRequest)
@@ -172,16 +172,15 @@ pageHome model =
         (List.map
             (\todo ->
                 ListGroup.li []
-                    [ Grid.row []
-                        [ Grid.col [ Col.xs, Col.md8 ] [ text todo.name ]
-                        , Grid.col [] [ Checkbox.checkbox [] "" ]
-                        ]
+                    [ Checkbox.checkbox [ Checkbox.attrs [ title todo.name ] ] todo.name
                     ]
             )
             model.todos
         )
-    , Input.text [ Input.attrs [ onInput UpdateText, placeholder "New To-do...", value model.todoText ] ]
-    , Button.button [ Button.primary, Button.attrs [ onClick AddTodo ] ] [ text "Add To-do" ]
+    , Form.formInline []
+        [ Input.text [ Input.attrs [ onInput UpdateText, placeholder "New To-do...", value model.todoText ] ]
+        , Button.button [ Button.primary, Button.attrs [ onClick AddTodo ] ] [ text "Add To-do" ]
+        ]
     ]
 
 
