@@ -25,6 +25,7 @@ type alias Todo =
     { name : String
     , date : Time.Posix
     , isDone : Bool
+    , id : Int
     }
 
 
@@ -78,6 +79,7 @@ type Msg
     | NavMsg Navbar.State
     | AddTodo
     | UpdateText String
+    | ToggleTodoDone Int
 
 
 subscriptions : Model -> Sub Msg
@@ -105,10 +107,22 @@ update msg model =
             )
 
         AddTodo ->
-            ( { model | todos = List.append model.todos [ { name = model.todoText, date = Time.millisToPosix 0, isDone = False } ] }, Cmd.none )
+            ( { model | todos = List.append model.todos [ { name = model.todoText, date = Time.millisToPosix 0, isDone = False, id = List.length model.todos } ] }, Cmd.none )
 
         UpdateText text ->
             ( { model | todoText = text }, Cmd.none )
+
+        ToggleTodoDone todoID ->
+            ( { model | todos = List.map (toggle todoID) model.todos }, Cmd.none )
+
+
+toggle : Int -> Todo -> Todo
+toggle id todo =
+    if todo.id == id then
+        { todo | isDone = not todo.isDone }
+
+    else
+        todo
 
 
 urlUpdate : Url -> Model -> ( Model, Cmd Msg )
