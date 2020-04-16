@@ -1,12 +1,17 @@
 module Main exposing (main)
 
+import Bootstrap.Button as Button
+import Bootstrap.Form.Checkbox as Checkbox
+import Bootstrap.Form.Input as Input
 import Bootstrap.Grid as Grid
+import Bootstrap.Grid.Col as Col
 import Bootstrap.ListGroup as ListGroup
 import Bootstrap.Navbar as Navbar
 import Browser exposing (UrlRequest)
 import Browser.Navigation as Navigation
 import Html exposing (..)
 import Html.Attributes exposing (..)
+import Html.Events exposing (onClick, onInput)
 import Time
 import Url exposing (Url)
 import Url.Parser as UrlParser exposing ((</>), Parser, s, top)
@@ -19,6 +24,7 @@ type alias Flags =
 type alias Todo =
     { name : String
     , date : Time.Posix
+    , isDone : Bool
     }
 
 
@@ -27,6 +33,7 @@ type alias Model =
     , page : Page
     , navState : Navbar.State
     , todos : List Todo
+    , todoText : String
     }
 
 
@@ -61,8 +68,10 @@ init flags url key =
                 , todos =
                     [ { name = "Finish Elm Todo List"
                       , date = Time.millisToPosix 0
+                      , isDone = False
                       }
                     ]
+                , todoText = ""
                 }
     in
     ( model, Cmd.batch [ urlCmd, navCmd ] )
@@ -72,6 +81,8 @@ type Msg
     = UrlChange Url
     | ClickedLink UrlRequest
     | NavMsg Navbar.State
+    | AddTodo
+    | UpdateText String
 
 
 subscriptions : Model -> Sub Msg
@@ -97,6 +108,12 @@ update msg model =
             ( { model | navState = state }
             , Cmd.none
             )
+
+        AddTodo ->
+            ( model, Cmd.none )
+
+        UpdateText text ->
+            ( { model | todoText = text }, Cmd.none )
 
 
 urlUpdate : Url -> Model -> ( Model, Cmd Msg )
@@ -158,9 +175,18 @@ pageHome : Model -> List (Html Msg)
 pageHome model =
     [ ListGroup.ul
         (List.map
-            (\todo -> ListGroup.li [] [ text todo.name ])
+            (\todo ->
+                ListGroup.li []
+                    [ Grid.row []
+                        [ Grid.col [ Col.xs, Col.md8 ] [ text todo.name ]
+                        , Grid.col [] [ Checkbox.checkbox [] "" ]
+                        ]
+                    ]
+            )
             model.todos
         )
+    , Input.text [ Input.attrs [ onInput UpdateText, placeholder "New To-do...", value model.todoText ] ]
+    , Button.button [ Button.primary, Button.attrs [ onClick AddTodo ] ] [ text "Add To-do" ]
     ]
 
 
