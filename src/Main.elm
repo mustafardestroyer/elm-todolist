@@ -108,7 +108,7 @@ update msg model =
             )
 
         AddTodo ->
-            ( { model | todos = List.append model.todos [ { name = model.todoText, date = Time.millisToPosix 0, isDone = False, id = List.length model.todos } ] }, Cmd.none )
+            ( { model | todos = List.append model.todos [ { name = model.todoText, date = Time.millisToPosix 0, isDone = False, id = List.length model.todos } ], todoText = "" }, Cmd.none )
 
         UpdateText text ->
             ( { model | todoText = text }, Cmd.none )
