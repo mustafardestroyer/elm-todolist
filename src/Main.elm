@@ -108,7 +108,19 @@ update msg model =
             )
 
         AddTodo ->
-            ( { model | todos = List.append model.todos [ { name = model.todoText, date = Time.millisToPosix 0, isDone = False, id = List.length model.todos } ], todoText = "" }, Cmd.none )
+            ( { model
+                | todos =
+                    List.append model.todos
+                        [ { name = model.todoText
+                          , date = Time.millisToPosix 0
+                          , isDone = False
+                          , id = List.length model.todos
+                          }
+                        ]
+                , todoText = ""
+              }
+            , Cmd.none
+            )
 
         UpdateText text ->
             ( { model | todoText = text }, Cmd.none )
@@ -196,7 +208,13 @@ pageHome model =
             model.todos
         )
     , Form.formInline [ onSubmit NoOp ]
-        [ Input.text [ Input.attrs [ onInput UpdateText, placeholder "New To-do...", value model.todoText ] ]
+        [ Input.text
+            [ Input.attrs
+                [ onInput UpdateText
+                , placeholder "New To-do..."
+                , value model.todoText
+                ]
+            ]
         , Button.button [ Button.primary, Button.attrs [ onClick AddTodo ] ] [ text "Add To-do" ]
         ]
     ]
